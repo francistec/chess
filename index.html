@@ -4,7 +4,7 @@
 	<title>Ajedrez VRGAS</title>
 	<style type="text/css">
 		table, tr, td{padding: 0px;margin: 0px;}
-		table tr {background-color: #ededed;}
+		/*table tr {background-color: #ededed;}*/
 		td{width: 50px;height: 50px;}
 		.wood { background-image: url(img.png); display: block;height: 35px;width: 35px; }
 		.peon { background-position: 43px -4px;background-size: 247px;}
@@ -107,18 +107,20 @@
 			InitGame();
 			var newRow = true;
 			$('tr').each(function(index, el){
-				console.group('row');
 				$('td', el).each(function(_index, _el ){
-					if( ( index % 2) == 0 ) {
-						console.log(( _index % 2) == 1);
-						if( ( _index % 2) == 1 ) {
-							$(el).css({'background-color':'#333'});
-						} else {
-							$(el).css({'background-color':'#ededed'});
+					if( 
+						(( _index % 2) == 0 )	
+						&& (( index % 2) == 0) ) {
+						$(_el).css({'background-color':'#444'});
+					}  else {
+						if( 
+							(( _index % 2) != 0 )	
+							&& (( index % 2) != 0) ) {
+							$(_el).css({'background-color':'#555'});
 						}
-					} 
+							
+					}
 				});
-				console.groupEnd();
 			});
 
 			$('td').click(function(e){
