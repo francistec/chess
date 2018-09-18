@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ajedrez VRGAS</title>
+	<style type="text/css">
+		table, tr, td{padding: 0px;margin: 0px;}
+		table tr {background-color: #ededed;}
+		td{width: 50px;height: 50px;}
+		.wood { background-image: url(img.png); display: block;height: 35px;width: 35px; }
+		.peon { background-position: 43px -4px;background-size: 247px;}
+		.torre { background-position: 82px -4px;background-size: 247px;}
+		.caballo { background-position: 123px -4px;background-size: 247px;}
+		.alfil { background-position: 163px -4px;background-size: 247px;}
+		.reyna { background-position: 245px -4px;background-size: 247px;}
+		.rey { background-position: -44px -4px;background-size: 247px;}
+		.peon.black { background-position: 43px 37px;background-size: 247px;}
+		.torre.black { background-position: 82px 37px;background-size: 247px;}
+		.caballo.black { background-position: 123px 37px;background-size: 247px;}
+		.alfil.black { background-position: 163px 37px;background-size: 247px;}
+		.reyna.black { background-position: 245px 37px;background-size: 247px;}
+		.rey.black { background-position: -44px 37px;background-size: 247px;}
+		.posibleMove { background-color: blanchedalmond; }
+	</style>
+</head>
+<body>
+	<table><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+	<script src="jquery.min.js"></script>
+	<script type="text/javascript">
+	    var woodClasses = ['peon','torre','caballo','alfil', 'reyna', 'rey'];
+		var taked = null;
+		var moves = {
+			Peon: function(isBlack, row, index){
+				if(isBlack){
+					var $classes = $('span','tr:eq('+(row-1)+') > td:eq('+(index)+')');
+					if($classes.length == 0){
+						$('tr:eq('+(row-1)+') > td:eq('+(index)+')').addClass('posibleMove');
+					} 
+					
+					//eat
+					$classes = $('span','tr:eq('+(row-1)+') > td:eq('+(index - 1)+')').attr('class');
+					if($classes){
+						$classes = $classes.split(' ');
+						$classes.filter(function($class){
+							console.log($classes.indexOf('black'));
+							if(woodClasses.indexOf($class) && $classes.indexOf('black') == -1){
+								$('tr:eq('+(row-1)+') > td:eq('+(index - 1)+')').addClass('posibleMove');
+							}
+						});
+					}
+					$classes = $('span','tr:eq('+(row-1)+') > td:eq('+(index + 1)+')').attr('class');
+					if($classes){
+						$classes = $classes.split(' ');
+						$classes.filter(function($class){
+							if(woodClasses.indexOf($class) && $classes.indexOf('black') == -1){
+								$('tr:eq('+(row-1)+') > td:eq('+(index + 1)+')').addClass('posibleMove');
+							}
+						});
+					}
+				} else{
+					var $classes = $('span','tr:eq('+(row+1)+') > td:eq('+(index)+')');
+					if($classes.length == 0){
+						$('tr:eq('+(row+1)+') > td:eq('+(index)+')').addClass('posibleMove');
+					} 
+
+					$classes = $('span','tr:eq('+(row+1)+') > td:eq('+(index + 1)+')').attr('class');
+					if($classes){
+						$classes = $classes.split(' ');
+						$classes.filter(function($class){
+							if(woodClasses.indexOf($class)  && $classes.indexOf('black') > -1 ){
+								$('tr:eq('+(row+1)+') > td:eq('+(index +1 )+')').addClass('posibleMove');
+							}
+						});
+					}
+
+					$classes = $('span','tr:eq('+(row+1)+') > td:eq('+(index - 1)+')').attr('class');
+					if($classes){
+						$classes = $classes.split(' ');
+						$classes.filter(function($class){
+							if(woodClasses.indexOf($class)  && $classes.indexOf('black') > -1 ){
+								$('tr:eq('+(row+1)+') > td:eq('+(index - 1 )+')').addClass('posibleMove');
+							}
+						});
+					}
+				}
+			},
+			Torre: function(isBlack){
+				console.log('Es Torre', isBlack);
+			},
+			Caballo: function(isBlack){
+				console.log('Es Caballo', isBlack);
+			},
+			Alfil: function(isBlack){
+				console.log('Es Alfil', isBlack);
+			},
+			Reyna: function(isBlack){
+				console.log('Es Reyna', isBlack);
+			},
+			Rey: function(isBlack){
+				console.log('Es Rey', isBlack);
+			},
+			Empty: function(isBlack){
+				console.log("Esta vacio", isBlack);
+			}
+		}
+
+		$(document).ready(function(){
+			InitGame();
+			var newRow = true;
+			$('tr').each(function(index, el){
+				console.group('row');
+				$('td', el).each(function(_index, _el ){
+					if( ( index % 2) == 0 ) {
+						console.log(( _index % 2) == 1);
+						if( ( _index % 2) == 1 ) {
+							$(el).css({'background-color':'#333'});
+						} else {
+							$(el).css({'background-color':'#ededed'});
+						}
+					} 
+				});
+				console.groupEnd();
+			});
+
+			$('td').click(function(e){
+				e.preventDefault();
+				//console.log($(this).hasClass('posibleMove'));
+				if(!$(this).hasClass('posibleMove')){
+					console.log("Busco los posibles movimientos");
+					$('.posibleMove').removeClass('posibleMove');
+					var trParent = $(this).parent();
+					var row = $('tr', $(this).closest("table")).index(trParent);
+					var index = $('td', $(this).closest("tr")).index(this);
+					taked = this;
+					move($("span", this), row, index);
+				} else{
+					console.log("Le pego el movimiento", this);
+					var $wood = $('span',taked).attr('class');
+					$('span',taked).remove();
+					$(this).html('<span class="'+$wood+'"></span>');
+					$('.posibleMove').removeClass('posibleMove');
+				}
+			});
+
+		});
+
+		function move(target,row,  index){
+			var item = factoryMoves(target);
+			item.moves(item.isBlack,row,  index);
+		}
+
+		function factoryMoves(target){
+			
+			if( $(target).hasClass('peon') ){
+				return { moves: moves.Peon, isBlack:  $(target).hasClass('black') };
+			}
+
+			if( $(target).hasClass('torre') ){
+				return { moves: moves.Torre, isBlack:  $(target).hasClass('black') };
+			}
+
+			if( $(target).hasClass('caballo') ){
+				return { moves: moves.Caballo, isBlack:  $(target).hasClass('black') };
+			}
+
+			if( $(target).hasClass('alfil') ){
+				return { moves: moves.Alfil , isBlack:  $(target).hasClass('black')};
+			}
+
+			if( $(target).hasClass('reyna') ){
+				return { moves: moves.Reyna , isBlack:  $(target).hasClass('black')};
+			}
+
+			if( $(target).hasClass('rey') ) {
+				return { moves: moves.Rey, isBlack:  $(target).hasClass('black') };
+			} else {
+				return { moves: moves.Empty }
+			}
+		}
+		
+		function InitGame(){
+			$('tr:eq(0) > td:first').html('<span class="wood torre"></span>');
+			$('tr:eq(0) > td:eq(1)').html('<span class="wood caballo"></span>');
+			$('tr:eq(0) > td:eq(2)').html('<span class="wood alfil"></span>');
+			$('tr:eq(0) > td:eq(3)').html('<span class="wood reyna"></span>');
+			$('tr:eq(0) > td:eq(4)').html('<span class="wood rey"></span>');
+			$('tr:eq(0) > td:eq(5)').html('<span class="wood alfil"></span>');
+			$('tr:eq(0) > td:eq(6)').html('<span class="wood caballo"></span>');
+			$('tr:eq(0) > td:eq(7)').html('<span class="wood torre"></span>');
+			$('tr:eq(1) > td').html('<span class="wood peon"></span>');
+
+
+			$('tr:eq(6) > td').html('<span class="wood peon black"></span>');
+			$('tr:eq(7) > td:first').html('<span class="wood torre black"></span>');
+			$('tr:eq(7) > td:eq(1)').html('<span class="wood caballo black"></span>');
+			$('tr:eq(7) > td:eq(2)').html('<span class="wood alfil black"></span>');
+			$('tr:eq(7) > td:eq(3)').html('<span class="wood reyna black"></span>');
+			$('tr:eq(7) > td:eq(4)').html('<span class="wood rey black"></span>');
+			$('tr:eq(7) > td:eq(5)').html('<span class="wood alfil black"></span>');
+			$('tr:eq(7) > td:eq(6)').html('<span class="wood caballo black"></span>');
+			$('tr:eq(7) > td:eq(7)').html('<span class="wood torre black"></span>');
+		}
+	</script>
+
+</body>
+</html>
